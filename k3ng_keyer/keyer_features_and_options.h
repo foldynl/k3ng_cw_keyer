@@ -9,7 +9,7 @@
 // #define FEATURE_WINKEY_EMULATION    // disabling Automatic Software Reset is highly recommended (see documentation) (this no longer requires FEATURE_SERIAL)
 // #define FEATURE_BEACON
 // #define FEATURE_CALLSIGN_RECEIVE_PRACTICE
-// #define FEATURE_POTENTIOMETER         // do not enable unless you have a potentiometer connected, otherwise noise will falsely trigger wpm changes
+#define FEATURE_POTENTIOMETER         // do not enable unless you have a potentiometer connected, otherwise noise will falsely trigger wpm changes
 #define FEATURE_SERIAL_HELP
 // #define FEATURE_HELL
 // #define FEATURE_PS2_KEYBOARD        // Use a PS2 keyboard to send code - Change keyboard layout (non-US) in K3NG_PS2Keyboard.h.  Additional options below.
@@ -31,7 +31,7 @@
 // #define FEATURE_DIT_DAH_BUFFER_CONTROL
 // #define FEATURE_HI_PRECISION_LOOP_TIMING
 // #define FEATURE_USB_MOUSE               // Uncomment three lines in k3ng_keyer.ino (search for note_usb_uncomment_lines)
-// #define FEATURE_CAPACITIVE_PADDLE_PINS  // remove the bypass capacitors on the paddle_left and paddle_right lines when using capactive paddles
+#define FEATURE_CAPACITIVE_PADDLE_PINS  // 1M ohm resitor between paddle_x PIN and paddle_x_recv PIN and foil (http://http://playground.arduino.cc/Main/CapacitiveSensor)
 // #define FEATURE_LED_RING                // Mayhew Labs Led Ring support
 // #define FEATURE_ALPHABET_SEND_PRACTICE  // enables command mode S command - created by Ryan, KC2ZWM
 // #define FEATURE_PTT_INTERLOCK 

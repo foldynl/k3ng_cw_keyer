@@ -70,7 +70,7 @@
 #endif
 
 #ifdef FEATURE_CAPACITIVE_PADDLE_PINS
-  #define capacitance_threshold 2
+  #define capacitance_threshold 100
 #endif //FEATURE_CAPACITIVE_PADDLE_PINS
 
 #ifdef FEATURE_LED_RING

@@ -2,8 +2,12 @@
 #ifndef keyer_pin_settings_h
 #define keyer_pin_settings_h
 
-#define paddle_left 2
-#define paddle_right 5
+#define paddle_left 7
+#define paddle_right 9
+#ifdef FEATURE_CAPACITIVE_PADDLE_PINS
+#define paddle_left_recv 8
+#define paddle_right_recv 10
+#endif
 #define tx_key_line_1 11       // (high = key down/tx on)
 #define tx_key_line_2 12
 #define tx_key_line_3 0

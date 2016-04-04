@@ -505,7 +505,14 @@ New fetures in this stable release:
   //#include <Usb.h>      // the USB Library can be downloaded at https://github.com/felis/USB_Host_Shield_2.0
 #endif
 
+#ifdef FEATURE_CAPACITIVE_PADDLE_PINS
+   #include <CapacitiveSensor.h>
+#endif
 
+#ifdef FEATURE_CAPACITIVE_PADDLE_PINS
+  CapacitiveSensor   paddle_left_cap(paddle_left, paddle_left_recv);
+  CapacitiveSensor   paddle_right_cap(paddle_right, paddle_right_recv);
+#endif
 
 // Variables and stuff
 struct config_t {  // 23 bytes
@@ -892,6 +899,7 @@ HardwareSerial * debug_serial_port;
 void setup()
 {
 
+
   initialize_pins();
   initialize_keyer_state();
   initialize_potentiometer();
@@ -907,7 +915,7 @@ void setup()
   initialize_usb();
   initialize_cw_keyboard();
   initialize_display();
-  initialize_debug_startup();
+  initialize_debug_startup();  
 
 }
 
@@ -10594,12 +10602,12 @@ int memory_end(byte memory_number) {
 
 void initialize_pins() {
   
-  //#ifndef FEATURE_CAPACITIVE_PADDLE_PINS
+  #ifndef FEATURE_CAPACITIVE_PADDLE_PINS
   pinMode (paddle_left, INPUT);
   digitalWrite (paddle_left, HIGH);
   pinMode (paddle_right, INPUT);
   digitalWrite (paddle_right, HIGH);
-  //#endif //#ifdef FEATURE_CAPACITIVE_PADDLE_PINS
+  #endif //#ifdef FEATURE_CAPACITIVE_PADDLE_PINS
   
   if (tx_key_line_1) {
     pinMode (tx_key_line_1, OUTPUT);
@@ -10732,7 +10740,6 @@ void initialize_pins() {
       digitalWrite(keyer_awake,KEYER_AWAKE_PIN_AWAKE_STATE);
     }
   #endif //FEATURE_SLEEP
-
   
 }
 
@@ -12181,151 +12188,19 @@ void MouseRptParser::OnMiddleButtonDown(MOUSEINFO *mi){
 //---------------------------------------------------------------------
 
 #ifdef FEATURE_CAPACITIVE_PADDLE_PINS
-uint8_t read_capacitive_pin(int pinToMeasure) {
-  
-  /*
-  
-  This code is from http://playground.arduino.cc/Code/CapacitiveSensor
-  
-  Original code by Mario Becker, Fraunhofer IGD, 2007 http://www.igd.fhg.de/igd-a4
-  
-  Updated by: Alan Chatham http://unojoy.tumblr.com
-  
-  Updated by Paul Stoffregen: Replaced '328 specific code with portOutputRegister, etc for compatibility with Arduino Mega, Teensy, Sanguino and other boards
-  
-  Gratuitous optimization to improve sensitivity by Casey Rodarmor.
-  
-  */
-  
+int read_capacitive_pin(int pinToMeasure) {
 
+  static long ret = 0;
 
-  // Variables used to translate from Arduino to AVR pin naming
-  
-  volatile uint8_t* port;
-  volatile uint8_t* ddr;
-  volatile uint8_t* pin;
-  
-  // Here we translate the input pin number from
-  //  Arduino pin number to the AVR PORT, PIN, DDR,
-  //  and which bit of those registers we care about.
-  
-  byte bitmask;
-  port = portOutputRegister(digitalPinToPort(pinToMeasure));
-  ddr = portModeRegister(digitalPinToPort(pinToMeasure));
-  bitmask = digitalPinToBitMask(pinToMeasure);
-  pin = portInputRegister(digitalPinToPort(pinToMeasure));
-  // Discharge the pin first by setting it low and output
-  *port &= ~(bitmask);
-  *ddr  |= bitmask;
-  delay(1);
-  // Prevent the timer IRQ from disturbing our measurement
-  noInterrupts();
-  // Make the pin an input with the internal pull-up on
-  *ddr &= ~(bitmask);
-  *port |= bitmask;
-
-  // Now see how long the pin to get pulled up. This manual unrolling of the loop
-  // decreases the number of hardware cycles between each read of the pin,
-  // thus increasing sensitivity.
-  uint8_t cycles = 17;
-  /*     if (*pin & bitmask) { cycles =  0;}
-  else if (*pin & bitmask) { cycles =  1;}
-  else if (*pin & bitmask) { cycles =  2;}
-  else if (*pin & bitmask) { cycles =  3;}
-  else if (*pin & bitmask) { cycles =  4;}
-  else if (*pin & bitmask) { cycles =  5;}
-  else if (*pin & bitmask) { cycles =  6;}
-  else if (*pin & bitmask) { cycles =  7;}
-  else if (*pin & bitmask) { cycles =  8;}
-  else if (*pin & bitmask) { cycles =  9;}
-  else if (*pin & bitmask) { cycles = 10;}
-  else if (*pin & bitmask) { cycles = 11;}
-  else if (*pin & bitmask) { cycles = 12;}
-  else if (*pin & bitmask) { cycles = 13;}
-  else if (*pin & bitmask) { cycles = 14;}
-  else if (*pin & bitmask) { cycles = 15;}
-  else if (*pin & bitmask) { cycles = 16;}*/
-  
-  
-  if (*pin & bitmask) {
-    cycles = 0;
-  } else { 
-    if (*pin & bitmask) {
-      cycles =  1;
-    } else { 
-      if (*pin & bitmask) {
-        cycles =  2;
-      } else {
-        if (*pin & bitmask) {
-          cycles =  3;
-        } else {
-          if (*pin & bitmask) {
-            cycles =  4;
-          } else {
-            if (*pin & bitmask) {
-              cycles =  5;
-            } else {
-              if (*pin & bitmask) {
-                cycles =  6;
-              } else {
-                if (*pin & bitmask) {
-                  cycles =  7;
-                } else {
-                  if (*pin & bitmask) {
-                    cycles =  8;
-                  } else {
-                    if (*pin & bitmask) {
-                      cycles =  9;
-                    } else {
-                      if (*pin & bitmask) {
-                        cycles = 10;
-                      } else {
-                        if (*pin & bitmask) {
-                          cycles = 11;
-                        } else {
-                          if (*pin & bitmask) {
-                            cycles = 12;
-                          } else {
-                            if (*pin & bitmask) {
-                              cycles = 13;
-                            } else {
-                              if (*pin & bitmask) {
-                                cycles = 14;
-                              } else {
-                                if (*pin & bitmask) {
-                                  cycles = 15;
-                                } else {
-                                  if (*pin & bitmask) {
-                                    cycles = 16;
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+  switch (pinToMeasure)
+  {
+    case paddle_left:
+       ret = paddle_left_cap.capacitiveSensor(5);
+       break;
+    case paddle_right:
+       ret = paddle_right_cap.capacitiveSensor(5);
+       break;
   }
-
-  // End of timing-critical section
-  interrupts();
-
-  // Discharge the pin again by setting it low and output
-  //  It's important to leave the pins low if you want to 
-  //  be able to touch more than 1 sensor at a time - if
-  //  the sensor is left pulled high, when you touch
-  //  two sensors, your body will transfer the charge between
-  //  sensors.
-  *port &= ~(bitmask);
-  *ddr  |= bitmask;
 
   #ifdef DEBUG_CAPACITIVE_PADDLE
   static unsigned long last_cap_paddle_debug = 0;
@@ -12333,13 +12208,13 @@ uint8_t read_capacitive_pin(int pinToMeasure) {
     debug_serial_port->flush();
     debug_serial_port->print("read_capacitive_pin: pin:");
     debug_serial_port->print(pinToMeasure);
-    debug_serial_port->print(" cyc:");
-    debug_serial_port->println(cycles);
+    debug_serial_port->print(" unit:");
+    debug_serial_port->println(ret);
     last_cap_paddle_debug = millis();
   }
   #endif //DEBUG_CAPACITIVE_PADDLE
 
-  return cycles;
+  return (ret >= capacitance_threshold) ? LOW : HIGH;
 
 }
 
@@ -12404,11 +12279,7 @@ int paddle_pin_read(int pin_to_read){
       return !digitalRead(pin_to_read);
     #endif
   #else
-      if (read_capacitive_pin(pin_to_read) > capacitance_threshold) {
-        return LOW;
-      } else {
-        return HIGH;
-      }
+      return read_capacitive_pin(pin_to_read);
   #endif //FEATURE_CAPACITIVE_PADDLE_PINS  
 
 }
